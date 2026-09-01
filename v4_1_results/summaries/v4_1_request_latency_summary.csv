@@ -1,0 +1,8 @@
+test_case_id,scenario_display,phase,request_events,successful_events,mean_total_latency_seconds,p95_total_latency_seconds,mean_cloud_latency_seconds,mean_edge_latency_seconds,mean_failover_recovery_seconds,mean_cloud_failure_detection_seconds
+TC01,Normal Operation,workload,300,299,0.23757904333333332,0.32672365000000003,0.23745804,,,5.016811
+TC02,Cloud Failure + Stateful Edge Failover,workload,300,300,0.25878457000000005,0.30753025000000006,2.0063827,0.19177590666666666,2.2214300000000002,2.0063827
+TC03,Cloud Failure without Failover,workload,300,0,2.0102314933333334,2.0168485499999997,2.0101874233333334,,,2.0101874233333334
+TC04,Complete Service Failure,workload,300,0,2.07797591,2.0205616500000003,2.0053902999999997,2.0110806500000002,,2.0053902999999997
+TC07,End-to-End Recovery Lifecycle,cloud_outage,100,99,0.48433542,2.29732015,2.0107618,0.28312396,2.3892075999999998,2.0107618
+TC07,End-to-End Recovery Lifecycle,normal_baseline,100,99,0.29411148,0.3254846,0.29398748999999996,,,5.014686
+TC07,End-to-End Recovery Lifecycle,post_recovery_verification,100,100,0.21669704,0.31518195,0.21656233,,,

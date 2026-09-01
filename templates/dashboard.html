@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Edge-Assisted Disaster Recovery Test Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+</head>
+<body>
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">SME ORDERING SERVICE · CONTROLLED RESEARCH SIMULATION</p>
+      <h1>Edge-Assisted Disaster Recovery Dashboard</h1>
+      <p class="subtitle">
+        · Simulate cloud outages 
+        · Observe edge keeps orders running 
+        · Verify that outage transactions are recovered</p>
+    </div>
+  </header>
+
+  <main class="page-shell">
+
+    <section class="status-grid" aria-label="Current system status">
+      <article class="status-card">
+        <div class="status-icon cloud">☁</div>
+        <div><span class="card-label">Primary cloud service</span><strong id="cloudStatus">Checking…</strong><small>Processes normal orders · port 5000</small></div>
+        <div class="card-controls">
+          <button onclick="serviceAction('cloud','start')">Start</button>
+          <button onclick="serviceAction('cloud','stop')">Stop</button>
+        </div>
+      </article>
+      <article class="status-card">
+        <div class="status-icon edge">▤</div>
+        <div><span class="card-label">Local edge service</span><strong id="edgeStatus">Checking…</strong><small>Keeps orders running during a cloud outage · port 5001</small></div>
+        <div class="card-controls">
+          <button onclick="serviceAction('edge','start')">Start</button>
+          <button onclick="serviceAction('edge','stop')">Stop</button>
+        </div>
+      </article>
+      <article class="status-card">
+        <div class="status-icon pending">▢</div>
+        <div><span class="card-label">Records waiting to sync</span><strong id="pendingMetric">—</strong><small>Current global count of edge records not yet copied back to the cloud</small></div>
+      </article>
+      <article class="status-card">
+        <div class="status-icon sync">↻</div>
+        <div><span class="card-label">Latest recovery result</span><strong id="recoveryMetric">—</strong><small>Outage records successfully represented in the restored cloud</small></div>
+      </article>
+    </section>
+
+    <section id="jobBanner" class="job-banner idle">
+      <div>
+        <strong id="jobTitle">Ready</strong>
+        <span id="jobMessage">Choose a test from the control panel.</span>
+      </div>
+      <span id="lastUpdated">—</span>
+    </section>
+
+    <section class="workspace">
+      <aside class="control-column">
+        <article class="panel primary-test-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">PRIMARY COMPARISON · TC01–TC04</p>
+              <h2>Run a controlled test</h2>
+            </div>
+          </div>
+          <p class="panel-intro">Main comparison set. Choose one operating condition and run it with workload settings.</p>
+
+          <label for="scenarioSelect">Operating condition</label>
+          <select id="scenarioSelect" onchange="updateScenarioHelp()">
+            {% for key, value in scenarios.items() %}
+              {% if key != 'TC07' %}
+                <option value="{{ key }}">{{ value.display_label or value.label }}</option>
+              {% endif %}
+            {% endfor %}
+          </select>
+          <div id="scenarioHelp" class="scenario-help"></div>
+
+          <div class="form-grid">
+            <div>
+              <label for="repetitions">Repeated runs</label>
+              <input id="repetitions" type="number" min="1" max="100" value="1">
+            </div>
+            <div>
+              <label for="requestCount">Orders per run</label>
+              <input id="requestCount" type="number" min="1" max="10000" value="10">
+            </div>
+          </div>
+          <label for="requestInterval">Time between orders (seconds)</label>
+          <input id="requestInterval" type="number" min="0.01" max="60" step="0.01" value="0.2" oninput="updateRate('requestInterval','rateLabel')">
+          <p class="help-text">Configured load: <strong id="rateLabel">5.00 orders/second</strong>. The results also record the actual achieved rate.</p>
+
+          <label class="check-row"><input id="autoManage" type="checkbox" checked> Prepare the required cloud/edge state automatically </label>
+          <button class="button primary full" onclick="runScenario()">▶ Run selected test</button>
+        </article>
+
+        <article class="panel lifecycle-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">LIFECYCLE VALIDATION · TC07</p>
+              <h2>Run the full recovery lifecycle</h2>
+            </div>
+          </div>
+          <p class="panel-intro">TC07 validates the orders from cloud service, cloud outage, edge operation, cloud restoration and verified recovery in 3 phases.</p>
+          <div class="lifecycle-flow" aria-label="TC07 lifecycle phases">
+            <span>Normal phase</span><b>→</b><span>Outage phase</span><b>→</b><span>Sync & Verify</span>
+          </div>
+          <div class="form-grid">
+            <div><label for="lifecycleRepetitions">Lifecycle repetitions</label><input id="lifecycleRepetitions" type="number" min="1" max="100" value="1"></div>
+            <div><label for="lifecycleRequestCount">Orders per phase</label><input id="lifecycleRequestCount" type="number" min="1" max="10000" value="10"></div>
+          </div>
+          <label for="lifecycleInterval">Time between orders (seconds)</label>
+          <input id="lifecycleInterval" type="number" min="0.01" max="60" step="0.01" value="0.2" oninput="updateRate('lifecycleInterval','lifecycleRateLabel')">
+          <p class="help-text">Configured load: <strong id="lifecycleRateLabel">5.00 orders/second</strong>. Server states are managed automatically for this lifecycle test.</p>
+          <button class="button lifecycle full" onclick="runLifecycle()">↻ Run TC07 full lifecycle</button>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading"><div><p class="eyebrow">RECOVERY CHECKS · TC05–TC06</p><h2>Check and recover outage records</h2></div></div>
+          <p class="panel-intro">Check after an edge-assisted outage to measure what is still outside the cloud and then recover it.</p>
+          <button class="button action full" onclick="runAction('consistency')"><strong>TC05</strong> · Check records waiting for cloud recovery</button>
+          <button class="button action full" onclick="runAction('recovery-sync')"><strong>TC06</strong> · Restore pending edge records to cloud</button>
+          <p class="help-text">Both checks use the latest successful edge-assisted experiment scope, not all historical records.</p>
+        </article>
+
+        <details class="panel utility-panel">
+          <summary><span><span class="eyebrow">TOOLS & EVIDENCE</span><strong>Analysis, archive and reset</strong></span><span class="summary-icon">⌄</span></summary>
+          <div class="details-body">
+            <button class="button secondary full" onclick="runAction('analyse')">Generate results and charts</button>
+            <button class="button secondary full" onclick="runAction('archive')">Archive current evidence</button>
+            <button class="button secondary full" onclick="runAction('cloud-to-edge-sync')">Maintenance: sync cloud → edge</button>
+            <label class="check-row"><input id="restartAfterReset" type="checkbox" checked> Restart cloud and edge after reset</label>
+            <button class="button danger full" onclick="resetExperiment()">Reset databases and result files</button>
+            <p class="help-text">Archive evidence before a reset. Reset permanently removes the current databases and <code>v4_1_results</code>.</p>
+          </div>
+        </details>
+      </aside>
+
+      <section class="content-column">
+        <section class="metric-grid" aria-label="Latest experiment summary">
+          <article class="metric"><span>Successful requests</span><strong id="availabilityMetric">—</strong><small>Transaction availability</small></article>
+          <article class="metric"><span>Failover delay</span><strong id="failoverMetric">—</strong><small>Observed failover recovery time</small></article>
+          <article class="metric"><span>Outage records outside cloud</span><strong id="rpoMetric">—</strong><small>RPO-related exposure in the latest test scope</small></article>
+          <article class="metric"><span>Recovery match</span><strong id="convergenceMetric">—</strong><small>Replica convergence</small></article>
+          <article class="metric"><span>Request rate</span><strong id="throughputMetric">—</strong><small>Configured / achieved req/s</small></article>
+          <article class="metric"><span>Edge memory use</span><strong id="edgeRssMetric">—</strong><small>Observed process RSS</small></article>
+          <article class="metric"><span>Cloud records</span><strong id="cloudCountMetric">—</strong><small>Current cloud database count</small></article>
+          <article class="metric"><span>Edge records</span><strong id="edgeCountMetric">—</strong><small>Current edge database count</small></article>
+        </section>
+
+        <article class="panel data-panel">
+          <nav class="tabs" aria-label="Dashboard data views">
+            <button class="tab active" data-tab="orders" onclick="showTab('orders', this)">Orders</button>
+            <button class="tab" data-tab="results" onclick="showTab('results', this)">Run summary</button>
+            <button class="tab" data-tab="requests" onclick="showTab('requests', this)">Request details</button>
+            <button class="tab" data-tab="charts" onclick="showTab('charts', this)">Charts</button>
+            <button class="tab" data-tab="logs" onclick="showTab('logs', this)">System log</button>
+          </nav>
+
+          <div id="ordersTab" class="tab-content active">
+            <div class="data-toolbar">
+              <div>
+                <h3>Transaction records</h3>
+                <p class="toolbar-subtitle">Compare records stored by the primary cloud and local edge services.</p>
+              </div>
+              <div class="toolbar-actions">
+                <div class="segmented">
+                  <button id="cloudOrdersButton" class="active" onclick="loadOrders('cloud')">Cloud orders</button>
+                  <button id="edgeOrdersButton" onclick="loadOrders('edge')">Edge orders</button>
+                </div>
+                <button class="small-button" onclick="loadOrders(currentOrderSource)">Refresh</button>
+              </div>
+            </div>
+            <div class="table-wrap"><table><thead id="ordersHead"></thead><tbody id="ordersBody"></tbody></table></div>
+          </div>
+
+          <div id="resultsTab" class="tab-content">
+            <div class="data-toolbar"><div><h3>Latest run-level results</h3><p class="toolbar-subtitle">One row per test run, including continuity and recovery measures.</p></div><button class="small-button" onclick="loadResults()">Refresh</button></div>
+            <div class="table-wrap"><table><thead><tr>
+              <th>Time</th><th>Test</th><th>Run</th><th>Success/total</th><th>Availability</th><th>Failover recovery (s)</th>
+              <th>Configured / achieved req/s</th><th>RPO exposure</th><th>Recovery complete</th><th>Convergence</th><th>Pending</th><th>Edge RSS MB</th>
+            </tr></thead><tbody id="resultsBody"></tbody></table></div>
+          </div>
+
+          <div id="requestsTab" class="tab-content">
+            <div class="data-toolbar"><div><h3>Latest request-level evidence</h3><p class="toolbar-subtitle">Trace how individual requests moved between cloud and edge states.</p></div><button class="small-button" onclick="loadRequestEvents()">Refresh</button></div>
+            <div class="table-wrap"><table><thead><tr>
+              <th>Time</th><th>Test/run</th><th>Phase</th><th>Request</th><th>State before → after</th><th>Target</th><th>Success</th>
+              <th>Cloud failure detection (s)</th><th>Edge latency (s)</th><th>Failover recovery (s)</th><th>Total latency (s)</th>
+            </tr></thead><tbody id="requestsBody"></tbody></table></div>
+          </div>
+
+          <div id="chartsTab" class="tab-content">
+            <div class="data-toolbar"><div><h3>Generated analysis charts</h3><p class="toolbar-subtitle">Visual summaries created from the recorded experiment evidence.</p></div><button class="small-button" onclick="loadCharts()">Refresh</button></div>
+            <div id="chartsGrid" class="charts-grid"></div>
+          </div>
+
+          <div id="logsTab" class="tab-content">
+            <div class="data-toolbar"><div><h3>Dashboard activity</h3><p class="toolbar-subtitle">Service actions, experiment preparation and completion messages.</p></div><button class="small-button" onclick="refreshStatus()">Refresh</button></div>
+            <div id="activityLog" class="activity-log"></div>
+          </div>
+        </article>
+      </section>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status"></div>
+  <script src="{{ url_for('static', filename='dashboard.js') }}"></script>
+</body>
+</html>

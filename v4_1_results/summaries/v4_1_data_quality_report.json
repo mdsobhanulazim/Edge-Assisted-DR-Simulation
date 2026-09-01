@@ -1,0 +1,9 @@
+{
+  "version": "4.1",
+  "run_rows": 52,
+  "request_event_rows": 1500,
+  "run_rows_with_quality_flags": 0,
+  "duplicate_database_client_order_ids": 0,
+  "global_inventory_rows": 900,
+  "note": "Global inventory is diagnostic only; research recovery metrics are batch/experiment scoped."
+}

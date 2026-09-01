@@ -1,0 +1,6 @@
+test_case_id,scenario_display,runs,total_requests,successful_requests,failed_requests,mean_availability_percent,availability_stddev,mean_configured_rate,mean_achieved_rate,mean_failover_recovery_seconds,p95_run_failover_recovery_seconds,mean_cloud_failure_detection_seconds,mean_total_request_latency_seconds,p95_total_request_latency_seconds,max_rpo_related_exposure_records,max_pending_sync_records,mean_recovery_completeness_percent,mean_replica_convergence_percent,mean_recovery_sync_seconds,max_edge_process_rss_mb,max_edge_db_size_bytes
+TC01,Normal Operation,10,300,299,1,99.667,1.0530384608360701,5.0,2.3442,,,5.016811,0.2375791,0.3104732,0,0,,,,40.469,28672.0
+TC02,Cloud Failure + Stateful Edge Failover,10,300,300,0,100.0,0.0,5.0,2.2013000000000003,2.2214300000000002,2.27521195,2.0063827,0.25878450000000003,0.2612793,30,30,0.0,0.0,,51.461,167936.0
+TC03,Cloud Failure without Failover,10,300,0,300,0.0,0.0,5.0,0.45010000000000006,,,2.0101873,2.0102316,2.0168063,0,0,,,,51.57,167936.0
+TC04,Complete Service Failure,10,300,0,300,0.0,0.0,5.0,0.43390000000000006,,,2.0053902999999997,2.077976,2.0207914,0,0,,,,,167936.0
+TC07,End-to-End Recovery Lifecycle,10,300,298,2,99.334,1.4040512811147596,5.0,1.2907,2.3892075999999998,2.918560649999999,2.1609065999999997,0.3317146,1.0532992,10,10,100.0,100.0,3.9868767,52.148,225280.0
