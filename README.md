@@ -478,9 +478,9 @@ To close the prototype safely:
 
 Closing only the browser tab does not stop the Python dashboard process.
 Use Windows PowerShell to look for dashboard process:
-> netstat -ano | findstr ":5050"
+**netstat -ano | findstr ":5050"**
 To kill:
-> taskkill /PID "LISTENING port" /T /F
+**taskkill /PID "LISTENING port" /T /F**
 
 ---
 
