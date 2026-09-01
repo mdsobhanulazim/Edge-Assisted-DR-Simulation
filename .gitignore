@@ -1,1 +1,11 @@
-
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+dashboard_logs/*.log
+archives/*.zip
+v4_1_results/
+cloud.db
+edge.db
+.v4_1_dashboard_processes.json
