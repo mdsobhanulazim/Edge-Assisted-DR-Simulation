@@ -6,9 +6,9 @@ The prototype simulates a primary cloud service and a secondary edge service. It
 
 This project was developed as part of the **UFCF9Y-60-M - Csct masters project 25sep_1 ft** at **UWE Bristol**.
 
-Evidence test run used in research is under:
-v4_1_results/
-dashboard_logs/
+Final test run evidence folder:
+# v4_1_results/
+# dashboard_logs/
 **archives/v4_1_evidence_20260822_184846.zip**
 
 ---
@@ -477,9 +477,10 @@ To close the prototype safely:
 6. Close the dashboard browser tab.
 
 Closing only the browser tab does not stop the Python dashboard process.
-Use Windows PowerShell to look for dashboard process
-1. netstat -ano | findstr ":5050"
-2. taskkill /PID "LISTENING port" /T /F
+Use Windows PowerShell to look for dashboard process:
+# netstat -ano | findstr ":5050"
+To kill:
+# taskkill /PID "LISTENING port" /T /F
 
 ---
 
