@@ -2,13 +2,12 @@
 
 A lightweight experimental prototype developed to evaluate edge-assisted disaster recovery for a cloud-based ordering service.
 
-The prototype simulates a primary cloud service and a secondary edge service. It supports controlled service failures, edge failover, data consistency checking, recovery synchronization, availability measurement, recovery lifecycle, Recovery Time Objective (RTO) measurement and record-based Recovery Point Objective (RPO) assessment.
-
 This project was developed as part of the **UFCF9Y-60-M - Csct masters project 25sep_1 ft** at **UWE Bristol**.
 
-Final test run evidence folder:
-v4_1_results/
-dashboard_logs/
+Please follow the instructions below to run the program.
+
+Once you download, the logs represent final test run record. You can find Final Test Run evidence in folder:
+
 **archives/v4_1_evidence_20260822_184846.zip**
 
 ---
@@ -24,7 +23,7 @@ dashboard_logs/
 - Controlled disaster recovery test scenarios
 - A full recovery lifecycle testing
 - Request-level and run-level experiment logging
-- Availability, RTO, RPO and consistency measurement
+- Availability, data consistency measurement
 - Automatic generation of clean datasets, summaries and charts
 - Experiment evidence archiving
 - Clean database and results reset
@@ -388,7 +387,7 @@ Keep the archive as a reproducible evidence package for the dissertation evaluat
 
 # Result Locations
 
-Generated evidence is stored in the following folders:
+Generated evidence is stored in the following folders. Current evidence here is the final one used for this research:
 
 ```text
 v4_1_results/
@@ -423,7 +422,7 @@ python edge_server.py
 Open a third PowerShell window and run:
 
 ```powershell
-python scenario_runner_v4_standard.py
+python scenario_runner_v4_1.py
 ```
 
 Follow the displayed menu and prepare the cloud and edge server states when instructed.
@@ -545,7 +544,7 @@ Check whether another dashboard window is already running. Close the previous da
 
 ## Disclaimer
 
-This prototype is an academic simulation developed for research and evaluation purposes. It is not tested yet as a production disaster recovery system and does not process real customer information.
+This model prototype is an academic simulation developed for research and evaluation purposes. It is not tested yet as a production disaster recovery system and does not process any customer information.
 
 <img width="1366" height="768" alt="Dashboard" src="https://github.com/user-attachments/assets/9853b5bc-7e9a-455f-92fe-2a06729de494" />
 
